@@ -14,7 +14,7 @@ const checkAuth = (
 ) => {
   let isAuth = false
   onAuthStateChanged(getAuth(), (user) => {
-    if (user && isAuth) {
+    if (user) {
       isAuth = true
       next()
     } else if (!user && !isAuth) {
@@ -39,16 +39,19 @@ const routes: RouteRecordRaw[] = [
     path: '/interview/:id',
     name: 'Interview',
     component: () => import('@/views/PageInterview.vue'),
+    beforeEnter: checkAuth,
   },
   {
     path: '/list',
     name: 'List',
     component: () => import('@/views/PageList.vue'),
+    beforeEnter: checkAuth,
   },
   {
     path: '/statistic',
     name: 'Statistic',
     component: () => import('@/views/PageStatistic.vue'),
+    beforeEnter: checkAuth,
   },
 ]
 

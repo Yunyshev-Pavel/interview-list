@@ -50,7 +50,7 @@ const submitButtonText = computed<string>(() => (isLogin.value ? 'Вход' : '�
   <div class="auth">
     <div class="auth__card">
       <div class="auth__header">
-        <h2 class="auth__title">Приветсвую</h2>
+        <h2 class="auth__title">Приветствую</h2>
         <p class="auth__subtitle">
           {{ subtitleText }}
           <a class="auth__link auth__link--switch" @click="toggleAuth">{{ linkAccountText }}</a>
@@ -98,11 +98,9 @@ const submitButtonText = computed<string>(() => (isLogin.value ? 'Вход' : '�
   align-items: center;
   padding: 1.5rem;
   min-height: 100vh;
-  background-color: var(--surface-ground, #f9fafb);
 }
 
 .auth__card {
-  background: var(--surface-card, #fff);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border-radius: 10px;
   padding: 1.8rem;
@@ -113,7 +111,6 @@ const submitButtonText = computed<string>(() => (isLogin.value ? 'Вход' : '�
 .auth__title {
   font-size: 1.7rem;
   font-weight: 600;
-  color: #1f2937;
   text-align: center;
   margin-bottom: 0.3rem;
 }
@@ -154,25 +151,10 @@ const submitButtonText = computed<string>(() => (isLogin.value ? 'Вход' : '�
   margin-bottom: 0.2rem;
 }
 
-:deep(.auth__input.p-inputtext),
-:deep(.auth__input input) {
-  background: #fff !important;
-  color: #111 !important;
-  border: 1px solid #d1d5db !important;
-  border-radius: 6px;
-  padding: 0.5rem 0.6rem;
-}
-
 .auth__button {
   margin-top: 0.8rem;
   width: 100%;
-  background-color: #3b82f6 !important;
   border: none !important;
-  color: #fff !important;
   font-weight: 500;
-  transition: background-color 0.2s ease;
-}
-.auth__button:hover {
-  background-color: #2563eb !important;
 }
 </style>

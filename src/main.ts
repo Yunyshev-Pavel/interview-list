@@ -3,7 +3,18 @@
 import './assets/main.css'
 import 'primeicons/primeicons.css'
 import Aura from '@primeuix/themes/aura'
-import { InputText, Password, Toast, Menubar, Button, ToastService } from 'primevue'
+import {
+  InputText,
+  Password,
+  Toast,
+  Menubar,
+  Button,
+  ToastService,
+  ProgressSpinner,
+  Card,
+  DataTable,
+  Column,
+} from 'primevue'
 
 import { initializeApp } from 'firebase/app'
 import { createApp } from 'vue'
@@ -37,8 +48,11 @@ app.use(PrimeVue, {
   },
 })
 app.component('ToastService', ToastService)
-
+app.component('ProgressSpinner', ProgressSpinner)
+app.component('DataTable', DataTable)
+app.component('Column', Column)
 app.component('InputText', InputText)
+app.component('Card', Card)
 app.component('Toast', Toast)
 app.component('Password', Password)
 app.component('Button', Button)
