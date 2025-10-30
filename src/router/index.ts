@@ -7,6 +7,7 @@ import {
   type RouteRecordRaw,
 } from 'vue-router'
 
+import { PATH } from './path'
 const checkAuth = (
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
@@ -25,32 +26,32 @@ const checkAuth = (
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: PATH.Home,
     name: 'Home',
-    component: () => import('@/views/PageHome.vue'),
+    component: () => import('@/views/HomePage.vue'),
     beforeEnter: checkAuth,
   },
   {
-    path: '/auth',
+    path: PATH.Auth,
     name: 'Auth',
-    component: () => import('@/views/PageAuth.vue'),
+    component: () => import('@/views/AuthPage.vue'),
   },
   {
-    path: '/interview/:id',
+    path: PATH.Interview,
     name: 'Interview',
-    component: () => import('@/views/PageInterview.vue'),
+    component: () => import('@/views/InterviewPage.vue'),
     beforeEnter: checkAuth,
   },
   {
-    path: '/list',
+    path: PATH.List,
     name: 'List',
-    component: () => import('@/views/PageList.vue'),
+    component: () => import('@/views/ListPage.vue'),
     beforeEnter: checkAuth,
   },
   {
-    path: '/statistic',
+    path: PATH.Statistic,
     name: 'Statistic',
-    component: () => import('@/views/PageStatistic.vue'),
+    component: () => import('@/views/StatisticPage.vue'),
     beforeEnter: checkAuth,
   },
 ]

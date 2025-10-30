@@ -1,44 +1,38 @@
 <script setup lang="ts">
+import Menubar from 'primevue/menubar'
+
 import { useUserStore } from '@/stores/user'
 import { getAuth, signOut } from 'firebase/auth'
-import { computed, ref } from 'vue'
-import type { ComputedRef } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-
+import type { ImenuItem } from '@/interfaces'
 const userStore = useUserStore()
 const router = useRouter()
 
-interface ImenuItem {
-  label: string
-  icon: string
-  path: string
-  show: ComputedRef<boolean>
-}
-
-const items = ref<ImenuItem[]>([
+const items = computed<ImenuItem[]>(() => [
   {
     label: 'Авторизация',
     icon: 'pi pi-user',
     path: '/auth',
-    show: computed((): boolean => !userStore.userId),
+    show: !userStore.userId,
   },
   {
     label: 'Добавить',
     icon: 'pi pi-plus',
     path: '/',
-    show: computed((): boolean => !!userStore.userId),
+    show: !!userStore.userId,
   },
   {
     label: 'Список собеседований',
     icon: 'pi pi-list',
     path: '/list',
-    show: computed((): boolean => !!userStore.userId),
+    show: !!userStore.userId,
   },
   {
     label: 'Статистика',
     icon: 'pi pi-chart-bar',
     path: '/statistic',
-    show: computed((): boolean => !!userStore.userId),
+    show: !!userStore.userId,
   },
 ])
 
@@ -58,9 +52,10 @@ const signOutMethod = async (): Promise<void> => {
         </router-link>
       </template>
     </template>
+
     <template #end>
-      <span v-if="userStore.userId" @click="signOutMethod" class="menu-exit">
-        <span class="pi pi-sign-out p-p-menuitem-icon" />
+      <span v-if="userStore.userId" @click="signOutMethod" class="menu-exit" role="button">
+        <i class="pi pi-sign-out" />
         <span class="ml-2">Выход</span>
       </span>
     </template>
@@ -70,6 +65,13 @@ const signOutMethod = async (): Promise<void> => {
 <style scoped>
 .menu {
   margin: 30px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+.p-menubar {
+  border: none;
+  padding: 0.5rem 1rem;
 }
 .menu-exit {
   cursor: pointer;
