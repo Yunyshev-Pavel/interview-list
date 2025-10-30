@@ -1,26 +1,22 @@
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { ref } from 'vue'
-import { useToast } from 'primevue'
-
-const isLoading = ref<boolean>(false)
+import { useAppToast } from './useAppToast'
 
 export function useAuth() {
-  const toast = useToast()
+  const { successToast, errorToast } = useAppToast()
+
+  const isLoading = ref<boolean>(false)
   const auth = getAuth()
+
   const login = async (email: string, password: string) => {
     isLoading.value = true
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      toast.add({ severity: 'success', summary: 'Вход', detail: 'Успешный вход', life: 3000 })
+      successToast('Вход', 'Успешный вход')
       return true
     } catch (error: unknown) {
       if (error instanceof Error) {
-        toast.add({
-          severity: 'error',
-          summary: 'Ошибка',
-          detail: (error as Error).message,
-          life: 3000,
-        })
+        errorToast('Ошибка', error.message)
       }
       return false
     } finally {
@@ -32,21 +28,11 @@ export function useAuth() {
     isLoading.value = true
     try {
       await createUserWithEmailAndPassword(auth, email, password)
-      toast.add({
-        severity: 'success',
-        summary: 'Регистрация',
-        detail: 'Пользователь создан',
-        life: 3000,
-      })
+      successToast('Регистрация', 'Пользователь создан')
       return true
     } catch (error: unknown) {
       if (error instanceof Error) {
-        toast.add({
-          severity: 'error',
-          summary: 'Ошибка',
-          detail: (error as Error).message,
-          life: 3000,
-        })
+        errorToast('Ошибка', error.message)
       }
       return false
     } finally {

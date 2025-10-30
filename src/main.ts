@@ -1,20 +1,9 @@
-/* eslint-disable vue/no-reserved-component-names */
-/* eslint-disable vue/multi-word-component-names */
 import './assets/main.css'
 import 'primeicons/primeicons.css'
 import Aura from '@primeuix/themes/aura'
-import {
-  InputText,
-  Password,
-  Toast,
-  Menubar,
-  Button,
-  ToastService,
-  ProgressSpinner,
-  Card,
-  DataTable,
-  Column,
-} from 'primevue'
+import ToastService from 'primevue/toastservice'
+import ConfirmationService from 'primevue/confirmationservice'
+import Toast from 'primevue/toast'
 
 import { initializeApp } from 'firebase/app'
 import { createApp } from 'vue'
@@ -23,6 +12,7 @@ import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import App from './App.vue'
 import router from './router'
+import Tooltip from 'primevue/tooltip'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDiwcfMhH0_F__wqc8X4FjycxNTgLZ0_Ss',
@@ -37,8 +27,6 @@ const firebaseConfig = {
 initializeApp(firebaseConfig)
 
 const app = createApp(App)
-
-app.use(ToastService)
 app.use(createPinia())
 app.use(router)
 
@@ -47,15 +35,9 @@ app.use(PrimeVue, {
     preset: Aura,
   },
 })
-app.component('ToastService', ToastService)
-app.component('ProgressSpinner', ProgressSpinner)
-app.component('DataTable', DataTable)
-app.component('Column', Column)
-app.component('InputText', InputText)
-app.component('Card', Card)
+app.use(ToastService)
+// eslint-disable-next-line vue/multi-word-component-names
 app.component('Toast', Toast)
-app.component('Password', Password)
-app.component('Button', Button)
-app.component('Menubar', Menubar)
-
+app.use(ConfirmationService)
+app.directive('Tooltip', Tooltip)
 app.mount('#app')
