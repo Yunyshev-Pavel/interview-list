@@ -17,7 +17,7 @@ export const useAppToast = () => {
       severity: 'error',
       summary,
       detail,
-      life: 4000,
+      life: 3000,
     })
   }
 
@@ -26,7 +26,7 @@ export const useAppToast = () => {
       severity: 'warn',
       summary,
       detail,
-      life: 3500,
+      life: 3000,
     })
   }
 

@@ -6,6 +6,7 @@ import { getAuth, signOut } from 'firebase/auth'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import type { ImenuItem } from '@/interfaces'
+import { PATH } from '@/router/path'
 const userStore = useUserStore()
 const router = useRouter()
 
@@ -16,6 +17,7 @@ const items = computed<ImenuItem[]>(() => [
     path: '/auth',
     show: !userStore.userId,
   },
+
   {
     label: 'Добавить',
     icon: 'pi pi-plus',
@@ -34,11 +36,23 @@ const items = computed<ImenuItem[]>(() => [
     path: '/statistic',
     show: !!userStore.userId,
   },
+  {
+    label: 'Видео',
+    icon: 'pi pi-video',
+    path: '/video',
+    show: !!userStore.userId,
+  },
+  {
+    label: 'Вопросы',
+    icon: 'pi pi-star',
+    path: '/questions',
+    show: !!userStore.userId,
+  },
 ])
 
 const signOutMethod = async (): Promise<void> => {
   await signOut(getAuth())
-  router.push('/auth')
+  router.push(PATH.AUTH)
 }
 </script>
 

@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import Chart from 'primevue/chart'
-import { collection, getDocs, getFirestore, orderBy, query } from 'firebase/firestore'
 import { computed, onMounted, ref } from 'vue'
-import { useUserStore } from '@/stores/user'
-import type { IInterview } from '@/interfaces'
+import type { Interview } from '@/interfaces'
+import { useInterview } from '@/composables/useInterviews'
 
-const userStore = useUserStore()
-const db = getFirestore()
+const { getAllInterviews } = useInterview()
 
-const interviews = ref<IInterview[]>([])
+const interviews = ref<Interview[]>([])
 const chartOption = ref()
 const chartData = ref()
 
@@ -32,19 +30,10 @@ onMounted(async () => {
   chartOption.value = setChartOptions()
 })
 
-const getAllInterviews = async (): Promise<IInterview[]> => {
-  const getData = query(
-    collection(db, `users/${userStore.userId}/interviews`),
-    orderBy('createdAt', 'desc'),
-  )
-  const listDocs = await getDocs(getData)
-  return listDocs.docs.map((doc) => doc.data() as IInterview)
-}
-
 const setChartData = () => {
   const documentStyle = getComputedStyle(document.body)
   const counts = { offer: 0, refusal: 0, process: 0 }
-  interviews.value.forEach((interview: IInterview) => {
+  interviews.value.forEach((interview: Interview) => {
     if (interview.result === 'Offer') counts.offer++
     else if (interview.result === 'Refusal') counts.refusal++
     else counts.process++

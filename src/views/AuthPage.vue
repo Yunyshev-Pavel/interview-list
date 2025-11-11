@@ -40,7 +40,7 @@ const submitForm = async () => {
     : await register(email.value, password.value)
 
   if (success) {
-    router.push(PATH.Home)
+    router.push(PATH.HOME)
   }
 }
 

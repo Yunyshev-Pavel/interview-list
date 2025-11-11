@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { getFirestore, doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore'
-import type { IInterview, IStage } from '@/interfaces'
+import { onMounted } from 'vue'
+import { useInterview } from '@/composables/useInterviews'
 
 import ProgressSpinner from 'primevue/progressspinner'
 import InputNumber from 'primevue/inputnumber'
@@ -11,47 +10,8 @@ import Button from 'primevue/button'
 import DatePicker from 'primevue/datepicker'
 import Textarea from 'primevue/textarea'
 import RadioButton from 'primevue/radiobutton'
-import { useUserStore } from '@/stores/user'
-import { useRoute, useRouter } from 'vue-router'
-import { useAppToast } from '@/composables/useAppToast'
 
-const { warnToast, successToast } = useAppToast()
-
-const userStore = useUserStore()
-const db = getFirestore()
-const route = useRoute()
-const router = useRouter()
-
-const isLoading = ref<boolean>(true)
-
-const interview = ref<IInterview>()
-
-const docref = doc(db, `users/${userStore.userId}/interviews`, route.params.id as string)
-
-const getData = async (): Promise<void> => {
-  isLoading.value = true
-  const docSnap = await getDoc(docref)
-
-  if (docSnap.exists()) {
-    const data = docSnap.data() as IInterview
-
-    if (data.stages && data.stages.length) {
-      data.stages = data.stages.map((stage: IStage) => {
-        if (stage.date && stage.date instanceof Timestamp) {
-          return {
-            ...stage,
-            date: stage.date?.toDate(),
-          }
-        }
-        return stage
-      })
-    }
-
-    interview.value = data
-  }
-  isLoading.value = false
-  console.log(interview.value)
-}
+const { saveInterview, getData, interview, loading } = useInterview()
 
 const addStage = () => {
   if (interview.value) {
@@ -68,30 +28,13 @@ const removeStage = (index: number) => {
     }
   }
 }
-const saveInterview = async (): Promise<void> => {
-  isLoading.value = true
 
-  if (!interview.value) return
-
-  try {
-    await updateDoc(docref, { ...interview.value })
-    await getData()
-    successToast('Сохранено!')
-
-    router.push('/list')
-  } catch (e) {
-    warnToast('Ошибка', (e as Error).message)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-onMounted(async () => await getData())
+onMounted(getData)
 </script>
 <template>
-  <ProgressSpinner v-if="isLoading" />
+  <ProgressSpinner v-if="loading" />
 
-  <div class="interview-form" v-else-if="interview?.id && !isLoading">
+  <div class="interview-form" v-else-if="interview?.id">
     <Card>
       <template #title>Собеседование в компанию {{ interview.company }} </template>
       <template #content>
