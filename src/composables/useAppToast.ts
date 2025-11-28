@@ -1,5 +1,6 @@
 import { useToast } from 'primevue/usetoast'
 
+const lifeToastSeconds = 3000
 export const useAppToast = () => {
   const toast = useToast()
 
@@ -8,7 +9,7 @@ export const useAppToast = () => {
       severity: 'success',
       summary,
       detail,
-      life: 3000,
+      life: lifeToastSeconds,
     })
   }
 
@@ -17,7 +18,7 @@ export const useAppToast = () => {
       severity: 'error',
       summary,
       detail,
-      life: 3000,
+      life: lifeToastSeconds,
     })
   }
 
@@ -26,7 +27,7 @@ export const useAppToast = () => {
       severity: 'warn',
       summary,
       detail,
-      life: 3000,
+      life: lifeToastSeconds,
     })
   }
 
@@ -35,7 +36,7 @@ export const useAppToast = () => {
       severity: 'info',
       summary,
       detail,
-      life: 3000,
+      life: lifeToastSeconds,
     })
   }
   return {

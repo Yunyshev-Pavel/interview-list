@@ -37,3 +37,10 @@ export interface IStage {
   date: Date | null
   description: string
 }
+
+export interface VideoRecord {
+  id?: number
+  name: string
+  blob: Blob
+  createdAt: number
+}

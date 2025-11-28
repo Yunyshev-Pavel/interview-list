@@ -4,19 +4,50 @@ import Card from 'primevue/card'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import { useAppToast } from '@/composables/useAppToast'
+import { useVideos } from '@/composables/useVideos'
+
+const { addVideos, deleteVideo, videos } = useVideos()
 
 const showUploadDialog = ref(false)
-const videos = ref<[]>([])
-const { successToast } = useAppToast()
+const file = ref<File | null>(null)
+
+const blobUrl = (b: Blob) => URL.createObjectURL(b)
+
+const { successToast, errorToast } = useAppToast()
 
 const handleFileSelect = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
+  const input = event.target as HTMLInputElement
+  const selected = input.files?.[0]
+  if (!selected) return
 
-  if (file && file.type.startsWith('video/')) {
-    successToast('Добавлен файл', file.name)
-    showUploadDialog.value = false
+  if (!selected.type.startsWith('video/')) {
+    errorToast('Ошибка', 'Выбранный файл не является видео')
+    return
   }
+
+  file.value = selected
+}
+
+const onUpload = async () => {
+  if (!file.value) {
+    errorToast('Ошибка', 'Сначала выберите файл')
+    return
+  }
+  try {
+    await addVideos(file.value)
+    successToast('Видео добавлено', file.value.name)
+  } catch (err) {
+    console.error('Ошибка при сохранении видео:', err)
+  }
+
+  file.value = null
+  showUploadDialog.value = false
+}
+
+const onDelete = async (id?: number) => {
+  if (!id) return
+  await deleteVideo(id)
+  successToast('Удалено', 'Видео удалено')
 }
 </script>
 
@@ -26,6 +57,7 @@ const handleFileSelect = (event: Event) => {
       <template #title>
         <div class="video-page__header">
           <span>Мои видеозаписи собеседований</span>
+
           <Button
             label="Добавить видео"
             class="video-page__add-button"
@@ -50,23 +82,35 @@ const handleFileSelect = (event: Event) => {
               class="video-page__file-input"
             />
             <div class="video-page__upload-placeholder">
-              <i class="pi pi-cloud-upload video-page__upload-icon" style="font-size: 3rem"></i>
+              <i class="pi pi-cloud-upload video-page__upload-icon"></i>
               <p class="video-page__upload-text">Нажмите чтобы выбрать видео файл</p>
             </div>
+            <div v-if="file" class="video-page__selected-file">Выбран файл: {{ file.name }}</div>
           </div>
 
           <template #footer>
             <Button
               label="Отмена"
+              severity="secondary"
               class="video-page__cancel-button"
               @click="showUploadDialog = false"
             />
+            <Button label="Загрузить" @click="onUpload" />
           </template>
         </Dialog>
 
         <div v-if="videos.length === 0" class="video-page__empty">
           <i class="pi pi-video video-page__empty-icon" style="font-size: 3rem"></i>
           <p class="video-page__empty-text">Пока нет видеозаписей</p>
+        </div>
+        <div v-else class="video-page__list">
+          <div v-for="v in videos" :key="v.id" class="video-page__item">
+            <video controls :src="blobUrl(v.blob)" class="video-page__video"></video>
+            <div class="video-page__item-footer">
+              <span>{{ v.name }}</span>
+              <Button icon="pi pi-trash" severity="danger" text @click="onDelete(v.id)" />
+            </div>
+          </div>
         </div>
       </template>
     </Card>
@@ -85,14 +129,29 @@ const handleFileSelect = (event: Event) => {
   justify-content: space-between;
 }
 
-.upload-area {
-  position: relative;
-  border: 2px dashed #ccc;
-  border-radius: 8px;
-  padding: 2rem;
-  text-align: center;
-  cursor: pointer;
+.video-page__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
 }
+
+.video-page__item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+}
+.video-page__video {
+  width: 100%;
+  border-radius: 6px;
+}
+
+.video-page__item-footer {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .video-page__title {
   font-size: 1.5rem;
   font-weight: 600;
@@ -117,13 +176,21 @@ const handleFileSelect = (event: Event) => {
 }
 .video-page__upload {
   position: relative;
-  border: 2px dashed #d1d5db;
+  border: 2px dashed #ccc;
   border-radius: 8px;
-  padding: 3rem 2rem;
+  padding: 2rem;
+  position: relative;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.2s ease;
 }
+
+.video-page__selected-file {
+  margin-top: 1rem;
+  color: #374151;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
 .video-page__upload-icon {
   font-size: 3rem;
   color: #9ca3af;

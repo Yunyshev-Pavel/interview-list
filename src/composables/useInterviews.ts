@@ -12,10 +12,12 @@ import {
   getDoc,
   updateDoc,
   Timestamp,
+  deleteDoc,
 } from 'firebase/firestore'
 import { useUserStore } from '@/stores/user'
 import { PATH } from '@/router/path'
 import { useRoute, useRouter } from 'vue-router'
+import { useConfirm } from 'primevue'
 
 export const useInterview = () => {
   const interview = ref<Interview | null>(null)
@@ -24,6 +26,8 @@ export const useInterview = () => {
   const userStore = useUserStore()
   const router = useRouter()
   const route = useRoute()
+
+  const confirm = useConfirm()
 
   const { errorToast, successToast, warnToast } = useAppToast()
 
@@ -96,7 +100,25 @@ export const useInterview = () => {
     }
   }
 
+  const confirmRemoveInterview = async (id: string, onUpdate: (list: Interview[]) => void) => {
+    confirm.require({
+      message: 'Вы хотите удалить собеседования',
+      header: 'Удаление собеседования',
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'Отмена',
+      acceptLabel: 'Удалить',
+      rejectClass: 'p-button-secondary p-button-outlined',
+      acceptClass: 'p-button-danger',
+      accept: async () => {
+        await deleteDoc(doc(db, `users/${userStore.userId}/interviews`, id))
+        const listInterviews = await getAllInterviews()
+        onUpdate(listInterviews)
+      },
+    })
+  }
+
   return {
+    confirmRemoveInterview,
     addNewInterview,
     getAllInterviews,
     saveInterview,

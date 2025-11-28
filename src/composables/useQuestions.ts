@@ -21,7 +21,7 @@ export function useInterviewQuestions() {
   }
 
   const addQuestion = (text: string) => {
-    if (!text.trim()) return
+    if (!text) return
 
     if (isDuplicateQuestion(text)) {
       warnToast('Такой вопрос уже существует!')

@@ -1,5 +1,11 @@
-import { getAuth } from 'firebase/auth'
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import {
+  createRouter,
+  createWebHistory,
+  type NavigationGuardNext,
+  type RouteLocationNormalized,
+  type RouteRecordRaw,
+} from 'vue-router'
 
 import { PATH } from './path'
 
@@ -47,21 +53,21 @@ const router = createRouter({
   routes: routes,
 })
 
-router.beforeEach((to, from, next) => {
-  const user = getAuth().currentUser
-  if (to.path === PATH.AUTH) {
-    if (user) {
-      next(PATH.HOME)
-    } else {
-      next()
+router.beforeEach(
+  (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+    if (to.path === PATH.AUTH) {
+      onAuthStateChanged(getAuth(), (user) => {
+        if (user) next(PATH.HOME)
+        else next()
+      })
+      return
     }
-    return
-  }
-  if (!user) {
-    next(PATH.AUTH)
-  } else {
-    next()
-  }
-})
+
+    onAuthStateChanged(getAuth(), (user) => {
+      if (user) next()
+      else next(PATH.AUTH)
+    })
+  },
+)
 
 export default router

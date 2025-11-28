@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useInterviewQuestions } from '@/composables/useInterviewQuestions'
+import { useInterviewQuestions } from '@/composables/useQuestions'
 
 import Card from 'primevue/card'
 import Button from 'primevue/button'
@@ -58,7 +58,7 @@ const onAddCustom = () => {
             <h4>Добавить свой вопрос</h4>
             <div class="questions-page__custom-inputs">
               <InputText
-                v-model="customQuestion"
+                v-model.trim="customQuestion"
                 placeholder="Введите свой вопрос..."
                 @keyup.enter="onAddCustom"
               />
@@ -130,9 +130,7 @@ const onAddCustom = () => {
   padding: 2rem;
   font-family: sans-serif;
 }
-.questions-page__search {
-  margin-bottom: 1rem;
-}
+
 .questions-page__add {
   margin-bottom: 2rem;
   padding-bottom: 2rem;

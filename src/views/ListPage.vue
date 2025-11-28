@@ -3,7 +3,6 @@ import { onMounted, ref } from 'vue'
 import type { Interview } from '@/interfaces'
 import { useInterview } from '@/composables/useInterviews'
 import { useAppToast } from '@/composables/useAppToast'
-import { useConfirmInterview } from '@/composables/useConfirmAction'
 
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -12,10 +11,9 @@ import ConfirmDialog from 'primevue/confirmdialog'
 import ProgressSpinner from 'primevue/progressspinner'
 import Message from 'primevue/message'
 import Badge from 'primevue/badge'
-const { confirmRemoveInterview } = useConfirmInterview()
 const { warnToast } = useAppToast()
 
-const { getAllInterviews, loading } = useInterview()
+const { getAllInterviews, loading, confirmRemoveInterview } = useInterview()
 
 const interviews = ref<Interview[]>([])
 
@@ -78,7 +76,7 @@ onMounted(async () => {
       </Column>
       <Column header="Этапы">
         <template #body="slotProps">
-          <span v-if="!slotProps.data.stages">Не заполнена</span>
+          <span v-if="!slotProps.data.stages">Не заполнено</span>
           <div v-else class="list-page__stages">
             <Badge
               v-for="(stage, i) in slotProps.data.stages"
