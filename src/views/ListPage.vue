@@ -1,17 +1,8 @@
 <script setup lang="ts">
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  getFirestore,
-  orderBy,
-  query,
-} from 'firebase/firestore'
 import { onMounted, ref } from 'vue'
-import { useUserStore } from '@/stores/user'
-import { useConfirm } from 'primevue'
-import type { IInterview } from '@/interfaces'
+import type { Interview } from '@/interfaces'
+import { useInterview } from '@/composables/useInterviews'
+import { useAppToast } from '@/composables/useAppToast'
 
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -20,66 +11,40 @@ import ConfirmDialog from 'primevue/confirmdialog'
 import ProgressSpinner from 'primevue/progressspinner'
 import Message from 'primevue/message'
 import Badge from 'primevue/badge'
+const { warnToast } = useAppToast()
 
-const userStore = useUserStore()
-const db = getFirestore()
-const confirm = useConfirm()
+const { getAllInterviews, loading, confirmRemoveInterview } = useInterview()
 
-const interviews = ref<IInterview[]>([])
-const isLoading = ref<boolean>(true)
+const interviews = ref<Interview[]>([])
 
-const confirmRemoveInterview = async (id: string): Promise<void> => {
-  confirm.require({
-    message: 'Вы хотите удалить собеседования',
-    header: 'Удаление собеседования',
-    icon: 'pi pi-info-circle',
-    rejectLabel: 'Отмена',
-    acceptLabel: 'Удалить',
-    rejectClass: 'p-button-secondary p-button-outlined',
-    acceptClass: 'p-button-danger',
-    accept: async () => {
-      try {
-        isLoading.value = true
-        await deleteDoc(doc(db, `users/${userStore.userId}/interviews`, id))
-        const listInterviews = await getAllInterviews()
-        interviews.value = listInterviews
-      } finally {
-        isLoading.value = false
-      }
-    },
+const removeInterview = async (id: string) => {
+  confirmRemoveInterview(id, (list) => {
+    interviews.value = list
   })
-}
-
-const getAllInterviews = async (): Promise<IInterview[]> => {
-  const getData = query(
-    collection(db, `users/${userStore.userId}/interviews`),
-    orderBy('createdAt', 'desc'),
-  )
-  const listDocs = await getDocs(getData)
-  return listDocs.docs.map((doc) => doc.data() as IInterview)
 }
 
 onMounted(async () => {
   try {
+    loading.value = true
     const listInterviews = await getAllInterviews()
     interviews.value = listInterviews
   } catch (e) {
-    console.error('Ошибка загрузки собеседований:', e)
+    warnToast('Ошибка загрузки собеседований:', (e as Error).message)
   } finally {
-    isLoading.value = false
+    loading.value = false
   }
 })
 </script>
 
 <template>
   <ConfirmDialog />
-  <ProgressSpinner v-if="isLoading" />
+  <ProgressSpinner v-if="loading" />
   <Message v-else-if="!interviews.length" size="large" severity="secondary"
     >Пока нет собеседований ! 😔</Message
   >
   <div v-else class="list-page">
     <h1>Список собеседований</h1>
-    <DataTable v-if="!isLoading && interviews.length" :value="interviews">
+    <DataTable v-if="!loading && interviews.length" :value="interviews">
       <Column field="company" header="Компания"></Column>
       <Column field="hrName" header="Имя HR"></Column>
       <Column field="vacancyLink" header="Вакансия">
@@ -111,7 +76,7 @@ onMounted(async () => {
       </Column>
       <Column header="Этапы">
         <template #body="slotProps">
-          <span v-if="!slotProps.data.stages">Не заполнена</span>
+          <span v-if="!slotProps.data.stages">Не заполнено</span>
           <div v-else class="list-page__stages">
             <Badge
               v-for="(stage, i) in slotProps.data.stages"
@@ -151,7 +116,7 @@ onMounted(async () => {
             <Button
               icon="pi pi-trash"
               severity="danger"
-              @click="confirmRemoveInterview(slotProps.data.id)"
+              @click="removeInterview(slotProps.data.id)"
             ></Button>
           </div>
         </template>

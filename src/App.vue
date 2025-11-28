@@ -21,7 +21,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Toast position="bottom-right" />
+  <Toast position="top-right" />
   <ProgressSpinner v-if="isLoading" />
   <div v-else class="container">
     <AppHeader />

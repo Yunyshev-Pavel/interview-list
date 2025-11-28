@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
-import type { IInterview } from '@/interfaces'
+import type { Interview } from '@/interfaces'
 
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
@@ -8,7 +8,7 @@ import Card from 'primevue/card'
 import { useInterview } from '@/composables/useInterviews'
 
 const { addNewInterview, loading } = useInterview()
-const interviewForm = reactive<Omit<IInterview, 'id' | 'createdAt'>>({
+const interviewForm = reactive<Omit<Interview, 'id' | 'createdAt'>>({
   company: '',
   vacancyLink: '',
   hrName: '',
@@ -19,8 +19,6 @@ const interviewForm = reactive<Omit<IInterview, 'id' | 'createdAt'>>({
 const disabledSaveButton = computed<boolean>(() => {
   return !(interviewForm.company && interviewForm.vacancyLink && interviewForm.hrName)
 })
-
-const submitForm = () => addNewInterview(interviewForm)
 </script>
 
 <template>
@@ -28,7 +26,7 @@ const submitForm = () => addNewInterview(interviewForm)
     <Card>
       <template #title>Новое собеседования</template>
       <template #content>
-        <form class="page-home__form" @submit.prevent="submitForm">
+        <form class="page-home__form" @submit.prevent="addNewInterview(interviewForm)">
           <InputText
             v-model="interviewForm.company"
             class="page-home__input"
